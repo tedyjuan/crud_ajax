@@ -5,7 +5,7 @@
 	<title>:: Iconic :: Table Normal</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<!-- VENDOR CSS -->
+	<link rel="icon" href="<?= base_url('public/dist/') ?>favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" href="<?= base_url('public/dist/') ?>assets/vendor/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<?= base_url('public/dist/') ?>assets/vendor/font-awesome/css/font-awesome.min.css">
 
@@ -16,6 +16,11 @@
 
 	<!-- MAIN CSS -->
 	<link rel="stylesheet" href="<?= base_url('public/dist/') ?>assets/css/main.css">
+	<style>
+		.breadcrumb-item.pointer:hover {
+			cursor: pointer;
+		}
+	</style>
 </head>
 
 <body data-theme="light" class="font-nunito right_icon_toggle">
@@ -72,7 +77,7 @@
 								</ul>
 							</li>
 							<li>
-								<a href="page-login.html" class="icon-menu"><i class="fa fa-power-off"></i></a>
+								<a onclick="logout()" class="icon-menu"><i class="fa fa-power-off"></i></a>
 							</li>
 						</ul>
 					</div>
@@ -93,7 +98,7 @@
 							<li><a href="page-profile2.html"><i class="icon-user"></i>My Profile</a></li>
 
 							<li class="divider"></li>
-							<li><a href="page-login.html"><i class="icon-power"></i>Logout</a></li>
+							<li><a onclick="logout()"><i class="icon-power"></i>Logout</a></li>
 						</ul>
 					</div>
 				</div>
@@ -110,19 +115,14 @@
 					<div class="tab-pane active" id="menu">
 						<nav id="left-sidebar-nav" class="sidebar-nav">
 							<ul id="main-menu" class="metismenu li_animation_delay">
-								<li>
-									<a href="<?= base_url(); ?>"><i class="fa fa-dashboard"></i><span>Dashboard</span></a>
-								</li>
-								<li>
-									<a href="#Dashboard" class="has-arrow"><i class="fa fa-users"></i><span>Role Akses</span></a>
-									<ul>
-										<li><a href="#">Master Role</a></li>
-									</ul>
-								</li>
-
-								<li>
-									<a href="#"><i class="fa fa-map"></i><span>Maps</span></a>
-								</li>
+								<?php if ($role == 'Administrator') {
+									$this->load->view('template/sidemenu_admin');
+								} else if ($role == 'HRD') {
+									$this->load->view('template/sidemenu_hrd');
+								} else if ($role == 'HOD') {
+									$this->load->view('template/sidemenu_hod');
+								}
+								?>
 
 							</ul>
 						</nav>
@@ -235,72 +235,37 @@
 		</div>
 
 		<!-- mani page content body part -->
+
 		<div id="main-content">
 			<div class="container-fluid">
-				<div class="block-header">
-					<div class="row">
-						<div class="col-lg-6 col-md-6 col-sm-12">
-							<h2>List Role Akses</h2>
-							<ul class="breadcrumb">
-								<li class="breadcrumb-item"><a href="index.html"><i class="fa fa-dashboard"></i></a></li>
-								<li class="breadcrumb-item">Table</li>
-								<li class="breadcrumb-item active">Jquery Datatable</li>
-							</ul>
-						</div>
-						<div class="col-lg-6 col-md-6 col-sm-12">
-							<div class="d-flex flex-row-reverse">
-								<div class="page_action">
-									<button type="button" class="btn btn-primary"><i class="fa fa-download"></i> Download report</button>
-									<button type="button" class="btn btn-secondary"><i class="fa fa-send"></i> Send report</button>
-								</div>
-								<div class="p-2 d-flex">
+				<div id="contentdata">
 
-								</div>
+					<div class="block-header">
+						<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-12">
+								<?php if (isset($title)) { ?>
+									<h2><?= $title; ?></h2>
+									<ul class="breadcrumb">
+										<li class="breadcrumb-item "><a href="<?= base_url(); ?>" title="Dashboard"><i class="fa fa-dashboard"></i></a></li>
+										<li class="breadcrumb-item pointer"><?= $title; ?></li>
+										<li class="breadcrumb-item pointer active">Jquery Datatable</li>
+									</ul>
+								<?php } ?>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<div class="row clearfix">
-					<div class="col-lg-12">
-						<div id="contentdata">
+					<div class="row clearfix">
+						<div class="col-lg-12">
+
 							<div class="text-center">
-								<h4>Welcome To Bear System</h4>
+								<h4>Welcome To Payyrol System</h4>
 							</div>
 
 						</div>
-						<!-- <div class="card">
-							<div class="body">
-								<div class="table-responsive">
-									<table class="table table-bordered table-hover js-basic-example dataTable table-custom" style="width: 100%;">
-										<thead>
-											<tr>
-												<th>Name</th>
-												<th>Position</th>
-												<th>Office</th>
-												<th>Age</th>
-												<th>Start date</th>
-												<th>Salary</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>Tiger Nixon</td>
-												<td>System Architect</td>
-												<td>Edinburgh</td>
-												<td>61</td>
-												<td>2011/04/25</td>
-												<td>$320,800</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div> -->
+
 					</div>
-
 				</div>
-
 
 			</div>
 		</div>
@@ -315,25 +280,55 @@
 	<!-- page js file -->
 	<script src="<?= base_url('public/dist/') ?>assets/bundles/mainscripts.bundle.js"></script>
 	<script>
-		// $('.js-basic-example').DataTable();
-
-		function ToController(controller, title) {
+		function ToController(controller, menuId) {
 			var base = "<?php echo base_url(); ?>";
 			var content = $('#contentdata');
-			var url = base + '/' + controller;
+			var url = base + controller;
+			// Show loading spinner
 			$(".page-loader-wrapper").fadeIn();
-			content.load(url);
-			$(".page-loader-wrapper").fadeOut();
+			content.load(url, function() {
+				// Hide loading spinner after content is loaded
+				$(".page-loader-wrapper").fadeOut();
+			});
+
 			return false;
-			url.empty();
 		}
 
-		function load_form(url, title) {
+		function load_form(url, active) {
 			var content;
 			content = $("#contentdata");
 			$(".page-loader-wrapper").fadeIn();
 			content.load(url);
 			$(".page-loader-wrapper").fadeOut();
+		}
+
+		function logout() {
+			swal({
+				title: "Apa kamu yakin?",
+				text: "Anda akan keluar dan mengakhiri sesi ini!",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#dc3545",
+				confirmButtonText: "YA, Keluar!",
+				cancelButtonText: "Tidak, Tetap Disini!",
+				closeOnConfirm: false,
+				closeOnCancel: false,
+				showLoaderOnConfirm: true,
+			}, function(isConfirm) {
+				if (isConfirm) {
+					setTimeout(function() {
+						swal("Ajax request finished!");
+					}, 2000);
+				} else {
+					swal("Tetap Disini", "Senang Ada Tetap Disini", "success");
+				}
+			});
+		}
+
+		function is_aktif(id, typ) {
+
+
+
 		}
 	</script>
 </body>
